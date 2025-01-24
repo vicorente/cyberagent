@@ -61,7 +61,7 @@ class AgentPro:
                         Recommend specific tools, scripts and linux commands, and how to use them effectively for this purpose. 
                         Every tool must be only executable from the terminal in Kali Linux and must be fully automatic with no manual intervention required. Do no use tools with graphical interfaces like burpsuite that require manual interaction.
                         Include detailed commands, and be sure all commands work. Replace the target for every command with the target URL supplied in the prompt.
-                        The response must be only in pure json structure, with some items inside the main 'recon' field, representing the tool name, brief description and command used to run the tool. Do not answer with any other format because the response will be parsed by an automated system.
+                        The response must be only in pure json structure, with some items inside the main 'recon' field, representing the tool 'name', brief 'description' and 'command' used to run the tool. Do not answer with any other format because the response will be parsed by an automated system.
                         When the tool is not installed by default in Kali Linux, include the field 'install' with the bash command to install the tool or auxiliary files in the command like wordlists or scripts.  
                         Be very strict with the response format, it is pure json with no formatting, no markdown, and do not include any additional information or comments.                     
                         """

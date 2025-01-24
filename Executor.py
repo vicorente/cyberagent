@@ -77,11 +77,11 @@ class CommandExecutor:
 
             for command in payload['recon']:
                 self.logger.info(f"Processing command: {command}")
-                result = self.execute_command(command)
-                if result:
-                    self.logger.info(f"Command executed successfully: {result}")
-                else:
-                    self.logger.error("Command execution failed")
+                # result = self.execute_command(command)
+                # if result:
+                #     self.logger.info(f"Command executed successfully: {result}")
+                # else:
+                #     self.logger.error("Command execution failed")
 
         except json.JSONDecodeError as e:
             self.logger.error(f"Error decoding JSON: {e}")
