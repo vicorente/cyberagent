@@ -44,22 +44,26 @@ class AgentPro:
 
         return "\n".join(code_lines)
 
-    def generic_response(self, prompt):
+    def recon(self, target):
         response: ChatResponse = chat(
             model="qwen2.5-coder:7b",
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert system specializing in offensive cybersecurity, designed to assist with conducting thorough and ethical security audits on computer systems, networks, and applications. Your objective is to identify vulnerabilities, recommend appropriate mitigation strategies, and adhere to ethical hacking principles and frameworks like OWASP, PTES, and MITRE ATT&CK.",
+                    "content": """
+                    You are an expert system specializing in offensive cybersecurity, designed to assist with conducting thorough and ethical security audits on computer systems, networks, and applications. 
+                    Your objective is to identify vulnerabilities, recommend appropriate mitigation strategies, and adhere to ethical hacking principles and frameworks like OWASP, PTES, and MITRE ATT&CK.""",
                 },
                 {
                     "role": "user",
                     "content": 
-                        """I am conducting a security audit of a Linux-based web server running Apache, PHP, and MySQL. The server is accessible via SSH and has several open ports (22, 80, 443).
-                        Identify potential vulnerabilities in this configuration and suggest penetration testing techniques to validate them. 
-                        Focus on privilege escalation, web application security, and database security. 
-                        Recommend specific tools and how to use them effectively. Every tool must be executable from the terminal in Kali Linux.
-                        The response must be in json format with several items representing the tool name, description, usage and command used to run the tool.
+                        f"""I am conducting a security audit of a public web server with URL {target}. You are responsible for the reconnaissance phase of the audit.                        
+                        Recommend specific tools, scripts and linux commands, and how to use them effectively for this purpose. 
+                        Every tool must be only executable from the terminal in Kali Linux and must be fully automatic with no manual intervention required. Do no use tools with graphical interfaces like burpsuite that require manual interaction.
+                        Include detailed commands, and be sure all commands work. Replace the target for every command with the target URL supplied in the prompt.
+                        The response must be only in pure json structure, with some items inside the main 'recon' field, representing the tool name, brief description and command used to run the tool. Do not answer with any other format because the response will be parsed by an automated system.
+                        When the tool is not installed by default in Kali Linux, include the field 'install' with the bash command to install the tool or auxiliary files in the command like wordlists or scripts.  
+                        Be very strict with the response format, it is pure json with no formatting, no markdown, and do not include any additional information or comments.                     
                         """
                     ,
                 },
@@ -128,7 +132,7 @@ class AgentPro:
             return []
     
     def run(self, prompt):
-        # print(f"Generating code for: {prompt}")
+        print(f"Generating code for: {prompt}")
         # code = self.generate_code(prompt)
         # print("Generated code:")
         # print(code)
@@ -144,5 +148,3 @@ class AgentPro:
         # if error:
         #     print("Error:")
         #     print(error)
-        response = self.generic_response(prompt)
-        print(response)

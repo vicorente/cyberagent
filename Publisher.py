@@ -13,7 +13,6 @@ class MQTTPublisher:
 
     def publish(self, message):
         self.client.publish(self.topic, message)
-        print(f"Published: '{message}' to topic '{self.topic}'")
 
    
 
