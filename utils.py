@@ -7,6 +7,10 @@ def clean_json_string(text: str) -> str:
     """Clean and format JSON string by removing markdown code blocks and extra whitespace."""
     # Remove markdown code blocks
     text = re.sub(r'```json\s*|\s*```', '', text)
+    # Remove content between <think> tags
+    text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+    # Remove any text before the first '{'
+    text = re.sub(r'^[^{]*', '', text)
     # Remove leading/trailing whitespace
     text = text.strip()
     return text
@@ -14,7 +18,7 @@ def clean_json_string(text: str) -> str:
 def parse_json_response(text: str) -> Union[Dict[str, Any], None]:
     """Parse a JSON string and return a dictionary."""
     try:
-        cleaned_text = clean_json_string(text)
+        cleaned_text = clean_json_string(text)        
         return json.loads(cleaned_text)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")

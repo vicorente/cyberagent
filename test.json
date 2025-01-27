@@ -1,42 +1,27 @@
-{
-    "commands": [
-      {
-        "order": 1,
-        "name": "nmap",
-        "description": "Network discovery and mapping tool",
-        "command": "nmap -sV -O www.orevestvip.com"
+curl -X POST http://localhost:11434/api/chat -H "Content-Type: application/json" -d '{
+  "model": "hf.co/bartowski/WhiteRabbitNeo-2.5-Qwen-2.5-Coder-7B-GGUF:latest",
+  "messages": [{"role": "user", "content": "Tell me about Canada."}],
+  "stream": false,
+  "format": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
       },
-      {
-        "order": 2,
-        "name": "dnsrecon",
-        "description": "DNS reconnaissance tool",
-        "install": "apt-get install dnsrecon",
-        "command": "dnsrecon -d www.orevestvip.com --axfr"
+      "capital": {
+        "type": "string"
       },
-      {
-        "order": 3,
-        "name": "sublist3r",
-        "description": "Subdomain enumeration tool",
-        "install": "git clone https://github.com/aboul3la/Sublist3r.git && cd Sublist3r && pip install -r requirements.txt",
-        "command": "python sublist3r.py -d www.orevestvip.com"
-      },
-      {
-        "order": 4,
-        "name": "dirb",
-        "description": "Web directory enumeration tool",
-        "install": {
-          "apt-get install dirb"
-        },
-        "command": "dirb http://www.orevestvip.com/"
-      },
-      {
-        "order": 5,
-        "name": "wpscan",
-        "description": "WordPress security scanner",
-        "install": {
-          "gem install wpscan"
-        },
-        "command": "wpscan --url http://www.orevestvip.com/"
+      "languages": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
+    },
+    "required": [
+      "name",
+      "capital", 
+      "languages"
     ]
   }
+}'

@@ -3,6 +3,7 @@
 
 import paho.mqtt.client as mqtt
 import json
+from Agent import ReconCommands
 import utils
 import subprocess
 import logging
@@ -68,15 +69,29 @@ class CommandExecutor:
 
     def on_message(self, client, userdata, msg):
         try:
-            payload = utils.parse_json_response(msg.payload.decode())
+            commands = ReconCommands.model_validate_json(msg.payload.decode())
             self.logger.info(f"Received command on topic {msg.topic}")
-            
-            if not payload or 'recon' not in payload:
-                self.logger.error("Invalid payload format")
-                return
+            self.logger.info(f"Payload: {commands }")
+            # if not payload or 'recon' not in payload:
+            #     self.logger.error("Invalid payload format")
+            #     return
 
-            for command in payload['recon']:
-                self.logger.info(f"Processing command: {command}")
+            # for command in payload['recon']:
+            #     self.logger.info(f"Processing command: {command}")
+            #     # Check if command is already installed 
+            #     if 'name' in command:
+            #         self.logger.info(f"Checking if {command['name']} is installed")
+            #         check_result = subprocess.run(f"which {command['name'].lower()}", shell=True, capture_output=True, text=True)
+            #         if check_result.returncode != 0:                        
+            #             self.logger.info(f"Command not installed")
+            #             if command['install'] and command['install'].strip():
+            #                 self.logger.info(f"Installing {command['name']} using command: {command['install']}")
+            #                 install_result = subprocess.run(command['install'], shell=True)
+            #                 if install_result.returncode != 0:                            
+            #                     self.logger.error(f"Failed to install {command['name']}")
+            #                     continue
+            #         else:
+            #             self.logger.info(f"{command['name']} is already installed")                
                 # result = self.execute_command(command)
                 # if result:
                 #     self.logger.info(f"Command executed successfully: {result}")
