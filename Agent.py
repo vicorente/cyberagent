@@ -12,53 +12,31 @@ import os
 import requests
 from typing import List
 from pydantic import BaseModel
-
+from ollama import Client
 
 class Command(BaseModel):
     name: str
     description: str
     command: str
-    install: str | None 
 
-class ReconCommands(BaseModel):
-    recon: List[Command]
 
-class Agent:    
+class Recon(BaseModel):
+    description: str
+    commands: List[Command]
 
-    def generate_code(self, prompt):
-        response: ChatResponse = chat(
-            model="qwen2.5-coder:7b",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a Python code generator. Respond only with executable Python code, no explanations or comments except for required pip installations at the top.",
-                },
-                {
-                    "role": "user",
-                    "content": f"Generate Python code to ${prompt}. If you need to use any external libraries, include a comment at the top of the code listing the required pip installations. Do not include any explanations in the code.",
-                },
-            ],
-        )
-        code = re.sub(
-            r"^```python\n|^```\n|```$",
-            "",
-            response["message"]["content"],
-            flags=re.MULTILINE,
-        )
-        code_lines = code.split("\n")
-        while code_lines and not (
-            code_lines[0].startswith("import")
-            or code_lines[0].startswith("from")
-            or code_lines[0].startswith("#")
-        ):
-            code_lines.pop(0)
 
-        return "\n".join(code_lines)
-
+class Agent:
+    client = Client(
+        host='http://172.16.5.180:11434'
+    )
+    
     def recon(self, target):
-        response: ChatResponse = chat(
-            model="hf.co/bartowski/WhiteRabbitNeo-2.5-Qwen-2.5-Coder-7B-GGUF:latest",
-            # model="deepseek-r1:8b",
+        # self.client.pull('deepseek-r1:8b')
+        response: ChatResponse = self.client.chat(
+            # model="hf.co/bartowski/WhiteRabbitNeo-2.5-Qwen-2.5-Coder-7B-GGUF:latest",
+            model="deepseek-r1:70b",
+            # model="jimscard/whiterabbit-neo:13b", 
+            # model="hf.co/bartowski/Llama-3.1-WhiteRabbitNeo-2-70B-GGUF:latest",
             messages=[
                 {
                     "role": "system",
@@ -68,33 +46,34 @@ class Agent:
                 },
                 {
                     "role": "user",
-                    "content": f"""I am conducting a security audit of a public web server with URL {target}. You are responsible for the reconnaissance phase of the audit.                        
+                    "content": f"""
+
+                        You are a pentester and your role is to make a reconnaissance phase of an audit of network with ip 192.168.1.0/24.                       
                         
-                        Recommend specific tools, scripts and linux commands, and how to use them effectively for this purpose. At least include 5 different tools or commands.
-                        
+                        You will plan a penetration testing in a task list as a description of the reconnaissance phase for the target, including the tools and commands you will use to find hidden vulnerabilities and misconfigurations in the target. 
+                        In the description, you must include the purpose of each tool or command and how it will help you to achieve the objective, and show how the commands are related to each other. 
+                        Do not include commands literals in the description, only the purpose and how it will help you to achieve the objective.
+                        You should not use fully automated scanners such as Nessus or OpenVAS. You should use manual penetration testing tools such as nmap, nikto, gobuster, etc.
                         Every tool must be only executable from the terminal in Kali Linux and must be fully automatic with no manual intervention required. Do no use tools with graphical interfaces like burpsuite that require manual interaction.
                         Use only tools present in Kali Linux by default, do not use custom tools or scripts.
+                        The description must be detailed, at least 300 words long, do not include vague and general information, it must be written in a professional and technical style and set the order in which the tools and commands will be executed and why.
+                        Do not provide install commands.
                         
-                        Use the commands with unusual options, remember that the objective is to find hidden vulnerabilities and misconfigurations.
+                        Recommend specific tools, scripts and linux commands, and how to use them effectively for this purpose. At least include 5 different tools or commands.
+                                            
+                        Use the commands with unusual options, remember that the objective is to find hidden vulnerabilities and misconfigurations, be creative.
                         
                         Include detailed commands for the tools, and be sure all commands work. Replace the target for every command with the target URL supplied in the prompt.
                         Prioritize a combinations of tools that use the outputs of one tool as the input to another tool using pipes or other methods. 
-                        Do not repeat the same type of tool, try to use different types of tools for different purposes.
-                        
-                        The response must be only returned as JSON.
-                        Include always an 'install' field with the command to install the tool with no confirmation required. Take into account tools that require pip or other
-                        methods different from apt-get to install.
-                        
-                        Do not answer with any other format because the response will be parsed by an automated system.
-                                                
-                        Be very strict with the response format, it is pure json with no formatting, no markdown, and do not include any additional information or comments.                     
+                        Do not repeat the same type of tool, try to use different types of tools for different purposes.                        
+
                         """,
                 },
             ],
-            format=ReconCommands.model_json_schema(),
-            options={'temperature': 0.5},
+            format=Recon.model_json_schema(),
+            options={"temperature": 0.7},
         )
-        # print(response['message']['content'])        
+        print(response["message"]["content"])
         return response.message.content
 
     def analyze_command(self, command):

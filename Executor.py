@@ -3,7 +3,7 @@
 
 import paho.mqtt.client as mqtt
 import json
-from Agent import ReconCommands
+from Agent import Recon
 import utils
 import subprocess
 import logging
@@ -69,7 +69,7 @@ class CommandExecutor:
 
     def on_message(self, client, userdata, msg):
         try:
-            commands = ReconCommands.model_validate_json(msg.payload.decode())
+            commands = Recon.model_validate_json(msg.payload.decode())
             self.logger.info(f"Received command on topic {msg.topic}")
             self.logger.info(f"Payload: {commands }")
             # if not payload or 'recon' not in payload:
