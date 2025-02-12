@@ -16,11 +16,12 @@ if __name__ == "__main__":
         # while True:
         # agent.example()
         response = agent.recon("www.orevestvip.com")
-        # payload = utils.parse_json_response(response)
+        
+        payload = utils.parse_json_response(response)
         #  print(response)
-        # for command in payload["recon"]:
-        #     analyzed_command = agent.analyze_command(command["command"] )
-        #     print(f"Analyzed command: {analyzed_command}")                    
+        for command in payload["commands"]:
+            analyzed_command = agent.analyze_command(command["command"] )
+            print(f"Analyzed command: {analyzed_command}")                    
         publisher.publish(response)                    
 
     except KeyboardInterrupt:
